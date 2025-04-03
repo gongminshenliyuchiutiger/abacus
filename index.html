@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>超級神算盤練習系統</title>
+    <!-- 引入 Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e6ecf0, #c9d6df);
+            margin: 0;
+            padding: 40px;
+            overflow-x: hidden;
+            touch-action: none;
+        }
+        h1 {
+            color: #34495e;
+            font-size: 2.8em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: 1px;
+            animation: fadeIn 1s ease-in;
+        }
+        .control-panel {
+            margin-bottom: 20px;
+        }
+        .abacus {
+            padding: 30px;
+            border-radius: 25px;
+            border: 8px solid;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), inset 0 2px 5px rgba(255, 255, 255, 0.2);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            width: 95%;
+            max-width: 950px;
+            min-width: calc((36px + 12px) * 15 + 60px + 16px);
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        .abacus.theme-classic {
+            background: linear-gradient(to bottom, #6d4c41, #4e342e);
+            border-color: #3e2723;
+        }
+        .abacus.theme-modern {
+            background: linear-gradient(to bottom, #2c3e50, #1a252f);
+            border-color: #17202a;
+        }
+        .abacus.theme-bright {
+            background: linear-gradient(to bottom, #f1c40f, #e67e22);
+            border-color: #d35400;
+        }
+        .abacus.theme-cyberpunk {
+            background: linear-gradient(to bottom, #0f1419, #1c2526);
+            border-color: #00ffcc;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
+        }
+        .abacus.theme-forest {
+            background: linear-gradient(to bottom, #2f4f4f, #1e2f23);
+            border-color: #556b2f;
+        }
+        .column {
+            display: inline-block;
+            width: 36px;
+            text-align: center;
+            margin: 0 6px;
+        }
+        .bead {
+            width: 28px;
+            height: 20px;
+            border-radius: 10px;
+            margin: 5px auto;
+            cursor: pointer;
+            transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            touch-action: none;
+        }
+        .abacus.theme-classic .bead {
+            background: linear-gradient(135deg, #ffca28, #ffa000);
+            border: 2px solid #e65100;
+        }
+        .abacus.theme-modern .bead {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border: 2px solid #1f618d;
+        }
+        .abacus.theme-bright .bead {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border: 2px solid #1b5e20;
+        }
+        .abacus.theme-cyberpunk .bead {
+            background: linear-gradient(135deg, #ff00cc, #00ffcc);
+            border: 2px solid #ff00ff;
+        }
+        .abacus.theme-forest .bead {
+            background: linear-gradient(135deg, #8fbc8f, #556b2f);
+            border: 2px solid #2e8b57;
+        }
+        .bead:hover {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), 0 0 5px rgba(255, 165, 0, 0.5);
+        }
+        .bead.active {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 8px rgba(255, 87, 34, 0.6);
+        }
+        .abacus.theme-classic .bead.active {
+            background: linear-gradient(135deg, #ff5722, #d81b60);
+            border-color: #b71c1c;
+        }
+        .abacus.theme-modern .bead.active {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            border-color: #6c3483;
+        }
+        .abacus.theme-bright .bead.active {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-color: #962626;
+        }
+        .abacus.theme-cyberpunk .bead.active {
+            background: linear-gradient(135deg, #ff9900, #ff00ff);
+            border-color: #ff6600;
+        }
+        .abacus.theme-forest .bead.active {
+            background: linear-gradient(135deg, #cd853f, #8b4513);
+            border-color: #6b3a0d;
+        }
+        .bead.top.active {
+            transform: translateY(14px);
+        }
+        .bead.bottom.active {
+            transform: translateY(-14px);
+        }
+        .beam {
+            width: 100%;
+            height: 12px;
+            margin: 10px 0;
+            border-radius: 4px;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        .abacus.theme-classic .beam {
+            background: #3e2723;
+        }
+        .abacus.theme-modern .beam {
+            background: #17202a;
+        }
+        .abacus.theme-bright .beam {
+            background: #d35400;
+        }
+        .abacus.theme-cyberpunk .beam {
+            background: #00ffcc;
+        }
+        .abacus.theme-forest .beam {
+            background: #556b2f;
+        }
+        .value {
+            color: #eceff1;
+            font-weight: bold;
+            font-size: 1em;
+            margin-top: 8px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+        .practice-panel {
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+            width: 95%;
+            max-width: 950px;
+        }
+        .difficulty-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+            margin: 10px 0;
+        }
+        .prompt-area {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            width: 95%;
+            max-width: 950px;
+            text-align: center;
+            display: none;
+            animation: slideUp 0.5s ease-out;
+        }
+        #practice-question {
+            font-size: 1.4em;
+            color: #263238;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        #feedback {
+            font-size: 1.3em;
+            padding: 12px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        #feedback:empty {
+            display: none;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #42a5f5, #1e88e5);
+            color: #fff;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        button:hover {
+            background: linear-gradient(135deg, #1e88e5, #1565c0);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+        }
+        .control-panel button.active {
+            background: linear-gradient(135deg, #1976d2, #0d47a1);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+        }
+        #reset-button {
+            position: absolute;
+            top: -55px;
+            right: 15px;
+            background: linear-gradient(135deg, #4caf50, #388e3c);
+            border: none;
+            font-size: 1.1em;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        #reset-button i {
+            color: #fff;
+        }
+        #reset-button:hover {
+            background: linear-gradient(135deg, #388e3c, #2e7d32);
+            transform: scale(1.1);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+        }
+        .difficulty-buttons button {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: 50%;
+            font-size: 1em;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .difficulty-buttons button.active {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 105, 180, 0.6), 0 0 30px rgba(255, 69, 0, 0.4);
+        }
+        .difficulty-buttons button:nth-child(2) { background: linear-gradient(135deg, #4caf50, #388e3c); }
+        .difficulty-buttons button:nth-child(2):hover, .difficulty-buttons button:nth-child(2).active:hover { background: linear-gradient(135deg, #388e3c, #2e7d32); }
+        .difficulty-buttons button:nth-child(3) { background: linear-gradient(135deg, #66bb6a, #4caf50); }
+        .difficulty-buttons button:nth-child(3):hover, .difficulty-buttons button:nth-child(3).active:hover { background: linear-gradient(135deg, #4caf50, #388e3c); }
+        .difficulty-buttons button:nth-child(4) { background: linear-gradient(135deg, #81c784, #66bb6a); }
+        .difficulty-buttons button:nth-child(4):hover, .difficulty-buttons button:nth-child(4).active:hover { background: linear-gradient(135deg, #66bb6a, #4caf50); }
+        .difficulty-buttons button:nth-child(5) { background: linear-gradient(135deg, #a5d6a7, #81c784); }
+        .difficulty-buttons button:nth-child(5):hover, .difficulty-buttons button:nth-child(5).active:hover { background: linear-gradient(135deg, #81c784, #66bb6a); }
+        .difficulty-buttons button:nth-child(6) { background: linear-gradient(135deg, #ffca28, #ffb300); }
+        .difficulty-buttons button:nth-child(6):hover, .difficulty-buttons button:nth-child(6).active:hover { background: linear-gradient(135deg, #ffb300, #ffa000); }
+        .difficulty-buttons button:nth-child(7) { background: linear-gradient(135deg, #ffb300, #ff8f00); }
+        .difficulty-buttons button:nth-child(7):hover, .difficulty-buttons button:nth-child(7).active:hover { background: linear-gradient(135deg, #ff8f00, #ff6f00); }
+        .difficulty-buttons button:nth-child(8) { background: linear-gradient(135deg, #ff8f00, #ff5722); }
+        .difficulty-buttons button:nth-child(8):hover, .difficulty-buttons button:nth-child(8).active:hover { background: linear-gradient(135deg, #ff5722, #ef6c00); }
+        .difficulty-buttons button:nth-child(9) { background: linear-gradient(135deg, #ff5722, #f4511e); }
+        .difficulty-buttons button:nth-child(9):hover, .difficulty-buttons button:nth-child(9).active:hover { background: linear-gradient(135deg, #f4511e, #e64a19); }
+        .difficulty-buttons button:nth-child(10) { background: linear-gradient(135deg, #f4511e, #e53935); }
+        .difficulty-buttons button:nth-child(10):hover, .difficulty-buttons button:nth-child(10).active:hover { background: linear-gradient(135deg, #e53935, #d81b60); }
+        .difficulty-buttons button:nth-child(11) { background: linear-gradient(135deg, #e53935, #d81b60); }
+        .difficulty-buttons button:nth-child(11):hover, .difficulty-buttons button:nth-child(11).active:hover { background: linear-gradient(135deg, #d81b60, #c2185b); }
+        .theme-selector {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .theme-selector button {
+            padding: 8px 12px;
+            font-size: 0.9em;
+            border-radius: 20px;
+            border: none;
+            color: #fff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .theme-selector button.theme-classic {
+            background: linear-gradient(135deg, #8d5524, #6d4c41);
+        }
+        .theme-selector button.theme-classic:hover {
+            background: linear-gradient(135deg, #6d4c41, #4e342e);
+            transform: scale(1.05);
+        }
+        .theme-selector button.theme-modern {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+        }
+        .theme-selector button.theme-modern:hover {
+            background: linear-gradient(135deg, #2c3e50, #1a252f);
+            transform: scale(1.05);
+        }
+        .theme-selector button.theme-bright {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+        .theme-selector button.theme-bright:hover {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            transform: scale(1.05);
+        }
+        .theme-selector button.theme-cyberpunk {
+            background: linear-gradient(135deg, #ff00cc, #00ffcc);
+        }
+        .theme-selector button.theme-cyberpunk:hover {
+            background: linear-gradient(135deg, #ff00ff, #00ccff);
+            transform: scale(1.05);
+        }
+        .theme-selector button.theme-forest {
+            background: linear-gradient(135deg, #8fbc8f, #556b2f);
+        }
+        .theme-selector button.theme-forest:hover {
+            background: linear-gradient(135deg, #556b2f, #2e8b57);
+            transform: scale(1.05);
+        }
+        .footer {
+            margin-top: 40px;
+            color: #95a5a6;
+            font-size: 0.9em;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <h1>超級神算盤練習系統</h1>
+    <div class="control-panel">
+        <button id="free-mode" onclick="switchMode('free')"><i class="fas fa-hand-pointer"></i> 自由模式</button>
+        <button id="practice-mode" onclick="switchMode('practice')"><i class="fas fa-calculator"></i> 練習模式</button>
+    </div>
+    <div class="abacus theme-classic" id="abacus">
+        <button id="reset-button" onclick="abacus.reset()" title="全部歸零">
+            <i class="fas fa-undo"></i> 歸零
+        </button>
+    </div>
+    <div class="theme-selector">
+        <button class="theme-classic" onclick="switchTheme('classic')">經典木質</button>
+        <button class="theme-modern" onclick="switchTheme('modern')">現代黑藍</button>
+        <button class="theme-bright" onclick="switchTheme('bright')">明亮橙黃</button>
+        <button class="theme-cyberpunk" onclick="switchTheme('cyberpunk')">賽博龐克</button>
+        <button class="theme-forest" onclick="switchTheme('forest')">田園森林</button>
+    </div>
+    <div class="practice-panel" id="practice-panel">
+        <div class="difficulty-buttons">
+            <span style="margin-right: 10px; font-size: 1.2em; color: #34495e;"><i class="fas fa-level-up-alt"></i> 請選擇難度：</span>
+            <button onclick="selectDifficulty(1)">1</button>
+            <button onclick="selectDifficulty(2)">2</button>
+            <button onclick="selectDifficulty(3)">3</button>
+            <button onclick="selectDifficulty(4)">4</button>
+            <button onclick="selectDifficulty(5)">5</button>
+            <button onclick="selectDifficulty(6)">6</button>
+            <button onclick="selectDifficulty(7)">7</button>
+            <button onclick="selectDifficulty(8)">8</button>
+            <button onclick="selectDifficulty(9)">9</button>
+            <button onclick="selectDifficulty(10)">10</button>
+            <button onclick="checkAnswer()" title="檢查答案"><i class="fas fa-check"></i></button>
+            <button onclick="nextQuestion()" title="下一題"><i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+    <div class="prompt-area" id="prompt-area">
+        <div id="practice-question"></div>
+        <div id="feedback"></div>
+    </div>
+    <div class="footer">Copyright © Liyuchiutiger Gongminshen</div>
+
+    <script>
+        document.title = "超級神算盤練習系統";
+
+        class Abacus {
+            constructor(columns = 15) {
+                this.columns = columns;
+                this.values = new Array(columns).fill(0);
+                this.render();
+                this.addTouchEvents();
+            }
+
+            render() {
+                const abacusDiv = document.getElementById('abacus');
+                const resetButton = abacusDiv.querySelector('#reset-button');
+                const currentTheme = abacusDiv.className.split(' ').find(cls => cls.startsWith('theme-')) || 'theme-classic';
+                abacusDiv.innerHTML = '';
+                if (resetButton) abacusDiv.appendChild(resetButton);
+
+                for (let i = 0; i < this.columns; i++) {
+                    const columnDiv = document.createElement('div');
+                    columnDiv.className = 'column';
+
+                    const topBead = document.createElement('div');
+                    topBead.className = 'bead top';
+                    topBead.dataset.value = 5;
+                    topBead.dataset.position = 'top';
+                    topBead.dataset.index = i;
+                    topBead.addEventListener('click', () => this.toggleTopBead(i));
+                    columnDiv.appendChild(topBead);
+
+                    const beam = document.createElement('div');
+                    beam.className = 'beam';
+                    columnDiv.appendChild(beam);
+
+                    for (let j = 0; j < 4; j++) {
+                        const bead = document.createElement('div');
+                        bead.className = 'bead bottom';
+                        bead.dataset.value = 1;
+                        bead.dataset.position = 'bottom';
+                        bead.dataset.index = i;
+                        bead.dataset.beadIndex = j;
+                        bead.addEventListener('click', () => this.toggleBottomBead(i, j));
+                        columnDiv.appendChild(bead);
+                    }
+
+                    const valueDiv = document.createElement('div');
+                    valueDiv.className = 'value';
+                    valueDiv.textContent = '0';
+                    columnDiv.appendChild(valueDiv);
+
+                    abacusDiv.appendChild(columnDiv);
+                }
+                abacusDiv.className = `abacus ${currentTheme}`;
+            }
+
+            addTouchEvents() {
+                const beads = document.querySelectorAll('.bead');
+                beads.forEach(bead => {
+                    bead.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        this.handleTouch(e);
+                    });
+                    bead.addEventListener('touchmove', (e) => {
+                        e.preventDefault();
+                        this.handleTouch(e);
+                    });
+                    bead.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                    });
+                });
+            }
+
+            handleTouch(event) {
+                const touches = event.touches;
+                for (let i = 0; i < touches.length; i++) {
+                    const touch = touches[i];
+                    const bead = document.elementFromPoint(touch.clientX, touch.clientY);
+                    if (bead && bead.classList.contains('bead')) {
+                        const column = parseInt(bead.dataset.index);
+                        if (bead.dataset.position === 'top') {
+                            this.toggleTopBead(column);
+                        } else if (bead.dataset.position === 'bottom') {
+                            const beadIndex = parseInt(bead.dataset.beadIndex);
+                            this.toggleBottomBead(column, beadIndex);
+                        }
+                    }
+                }
+            }
+
+            toggleTopBead(column) {
+                const columnDiv = document.querySelectorAll('.column')[column];
+                const topBead = columnDiv.querySelector('.bead.top');
+                if (topBead.classList.contains('active')) {
+                    topBead.classList.remove('active');
+                    this.values[column] -= 5;
+                } else {
+                    topBead.classList.add('active');
+                    this.values[column] += 5;
+                }
+                this.updateValue(column);
+            }
+
+            toggleBottomBead(column, beadIndex) {
+                const columnDiv = document.querySelectorAll('.column')[column];
+                const bottomBeads = columnDiv.querySelectorAll('.bead.bottom');
+                const clickedBead = bottomBeads[beadIndex];
+                let currentValue = this.values[column] % 5;
+                let targetIndex = beadIndex;
+
+                if (clickedBead.classList.contains('active')) {
+                    bottomBeads.forEach((bead, index) => {
+                        if (index >= targetIndex) bead.classList.remove('active');
+                    });
+                    this.values[column] -= (currentValue - targetIndex);
+                } else {
+                    bottomBeads.forEach((bead, index) => {
+                        if (index <= targetIndex) bead.classList.add('active');
+                        else bead.classList.remove('active');
+                    });
+                    this.values[column] = this.values[column] - currentValue + (targetIndex + 1);
+                }
+                this.updateValue(column);
+            }
+
+            updateValue(column) {
+                const columnDiv = document.querySelectorAll('.column')[column];
+                const valueDiv = columnDiv.querySelector('.value');
+                valueDiv.textContent = this.values[column];
+            }
+
+            reset() {
+                this.values.fill(0);
+                document.querySelectorAll('.bead').forEach(bead => bead.classList.remove('active'));
+                document.querySelectorAll('.value').forEach(value => value.textContent = '0');
+            }
+
+            getTotal() {
+                return this.values.reduce((sum, val, idx) => sum + val * Math.pow(10, this.columns - 1 - idx), 0);
+            }
+        }
+
+        const abacus = new Abacus();
+        let currentMode = 'free';
+        let currentPracticeType = 'calculation';
+        let currentQuestion = null;
+        let difficulty = 0;
+
+        function switchMode(mode) {
+            currentMode = mode;
+            const practicePanel = document.getElementById('practice-panel');
+            const promptArea = document.getElementById('prompt-area');
+            const freeButton = document.getElementById('free-mode');
+            const practiceButton = document.getElementById('practice-mode');
+
+            freeButton.classList.remove('active');
+            practiceButton.classList.remove('active');
+
+            if (mode === 'free') {
+                freeButton.classList.add('active');
+                practicePanel.style.display = 'none';
+                promptArea.style.display = 'none';
+                abacus.reset();
+            } else if (mode === 'practice') {
+                practiceButton.classList.add('active');
+                practicePanel.style.display = 'block';
+                promptArea.style.display = 'none';
+                document.getElementById('practice-question').textContent = '';
+                document.getElementById('feedback').textContent = '';
+                difficulty = 0;
+                abacus.reset();
+                clearDifficultySelection();
+            }
+        }
+
+        function switchTheme(theme) {
+            const abacusDiv = document.getElementById('abacus');
+            abacusDiv.className = `abacus theme-${theme}`;
+            abacus.render();
+        }
+
+        function selectDifficulty(level) {
+            difficulty = level;
+            clearDifficultySelection();
+            const selectedButton = document.querySelector(`.difficulty-buttons button:nth-child(${level + 1})`);
+            selectedButton.classList.add('active');
+            nextQuestion();
+        }
+
+        function clearDifficultySelection() {
+            const buttons = document.querySelectorAll('.difficulty-buttons button');
+            buttons.forEach(button => button.classList.remove('active'));
+        }
+
+        function nextQuestion() {
+            if (currentMode !== 'practice' || difficulty === 0) return;
+            abacus.reset();
+            const questionDiv = document.getElementById('practice-question');
+            const feedbackDiv = document.getElementById('feedback');
+            const promptArea = document.getElementById('prompt-area');
+            feedbackDiv.textContent = '';
+            promptArea.style.display = 'block';
+
+            const maxNum = Math.pow(10, Math.ceil(difficulty / 2)) - 1;
+            const num1 = Math.floor(Math.random() * maxNum) + 1;
+            const num2 = Math.floor(Math.random() * maxNum) + 1;
+            const operator = difficulty > 5 && Math.random() > 0.5 ? '-' : '+';
+            if (operator === '-') {
+                currentQuestion = num1 >= num2 ? num1 - num2 : num2 - num1;
+                questionDiv.textContent = `(難度 ${difficulty}) 請計算：${Math.max(num1, num2)} - ${Math.min(num1, num2)} =`;
+            } else {
+                currentQuestion = num1 + num2;
+                questionDiv.textContent = `(難度 ${difficulty}) 請計算：${num1} + ${num2} =`;
+            }
+        }
+
+        function checkAnswer() {
+            if (currentMode !== 'practice' || !currentQuestion) return;
+            const total = abacus.getTotal();
+            const feedbackDiv = document.getElementById('feedback');
+            if (total === currentQuestion) {
+                feedbackDiv.textContent = '正確！';
+                feedbackDiv.style.color = '#2e7d32';
+                feedbackDiv.style.background = '#e8f5e9';
+            } else {
+                feedbackDiv.textContent = `錯誤，正確答案是 ${currentQuestion}`;
+                feedbackDiv.style.color = '#c62828';
+                feedbackDiv.style.background = '#ffebee';
+            }
+        }
+
+        // 初始化為自由模式與經典主題
+        switchMode('free');
+    </script>
+</body>
+</html>
