@@ -729,23 +729,28 @@
             }
 
             toggleBottomBead(column, beadIndex) {
-                const columnDiv = document.querySelectorAll('.column')[column];
-                const bottomBeads = columnDiv.querySelectorAll('.bead.bottom');
-                const currentValue = this.values[column] % 5;
-                const targetValue = beadIndex + 1;
+    const columnDiv = document.querySelectorAll('.column')[column];
+    const bottomBeads = columnDiv.querySelectorAll('.bead.bottom');
+    const currentValue = this.values[column] % 5; // 當前底部值（0-4）
+    const targetValue = beadIndex + 1; // 目標值（點擊第幾顆珠子，值為 beadIndex + 1）
 
-                if (currentValue === targetValue) {
-                    bottomBeads.forEach(bead => bead.classList.remove('active'));
-                    this.values[column] -= currentValue;
-                } else {
-                    bottomBeads.forEach((bead, index) => {
-                        if (index < targetValue) bead.classList.add('active');
-                        else bead.classList.remove('active');
-                    });
-                    this.values[column] = this.values[column] - currentValue + targetValue;
-                }
-                this.updateValue(column);
-            }
+    if (currentValue >= targetValue) {
+        // 如果當前值大於等於目標值，取消從該珠子開始到最上面的所有珠子
+        bottomBeads.forEach((bead, index) => {
+            if (index >= beadIndex) bead.classList.remove('active');
+            // 保留 index < beadIndex 的珠子狀態
+        });
+        this.values[column] -= (currentValue - (beadIndex)); // 只減去被取消的部分
+    } else {
+        // 如果當前值小於目標值，啟動到目標珠子為止的所有珠子，取消更高的珠子
+        bottomBeads.forEach((bead, index) => {
+            if (index < targetValue) bead.classList.add('active');
+            else bead.classList.remove('active');
+        });
+        this.values[column] = this.values[column] - currentValue + targetValue;
+    }
+    this.updateValue(column);
+}
 
             updateValue(column) {
                 const columnDiv = document.querySelectorAll('.column')[column];
