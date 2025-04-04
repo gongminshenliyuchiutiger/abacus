@@ -6,518 +6,524 @@
     <title>超級神珠心算盤練習系統</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-    body {
-        font-family: 'Segoe UI', 'Arial', sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 100vh;
-        background: linear-gradient(135deg, #e6ecf0, #c9d6df);
-        margin: 0;
-        padding: 2rem;
-        overflow-x: hidden;
-        touch-action: manipulation;
-    }
-    h1 {
-        color: #34495e;
-        font-size: clamp(1.8rem, 5vw, 2.8rem);
-        margin-bottom: 1rem;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        letter-spacing: 1px;
-        animation: fadeIn 1s ease-in;
-    }
-    .control-panel {
-        margin-bottom: 1rem;
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    .abacus {
-        padding: 1.5rem;
-        border-radius: 1.5rem;
-        border: 0.5rem solid;
-        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.25), inset 0 0.1rem 0.3rem rgba(255, 255, 255, 0.2);
-        position: relative;
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        max-width: 60rem;
-        min-width: 20rem;
-        box-sizing: border-box;
-        transition: all 0.3s ease;
-    }
-    .abacus.theme-classic {
-        background: linear-gradient(to bottom, #6d4c41, #4e342e);
-        border-color: #3e2723;
-    }
-    .abacus.theme-modern {
-        background: linear-gradient(to bottom, #2c3e50, #1a252f);
-        border-color: #17202a;
-    }
-    .abacus.theme-bright {
-        background: linear-gradient(to bottom, #f1c40f, #e67e22);
-        border-color: #d35400;
-    }
-    .abacus.theme-cyberpunk {
-        background: linear-gradient(to bottom, #0f1419, #1c2526);
-        border-color: #00ffcc;
-        box-shadow: 0 0 1rem rgba(0, 255, 204, 0.5);
-    }
-    .abacus.theme-forest {
-        background: linear-gradient(to bottom, #2f4f4f, #1e2f23);
-        border-color: #556b2f;
-    }
-    .abacus.theme-rainbow {
-        background: linear-gradient(135deg, #ff0000, #ff8000, #ffff00, #00ff00, #00ffff, #0000ff, #8000ff);
-        border-color: #ffffff;
-        box-shadow: 0 0 1rem rgba(255, 255, 255, 0.3);
-    }
-    .abacus.theme-pinkbubble {
-        background: linear-gradient(to bottom, #ff99cc, #ff66b2);
-        border-color: #ff3399;
-        box-shadow: 0 0 1rem rgba(255, 102, 204, 0.5);
-    }
-    .column {
-        display: inline-flex;
-        flex-direction: column;
-        align-items: center;
-        width: clamp(2rem, 4vw, 2.5rem);
-        margin: 0 0.3rem;
-    }
-    .bead {
-        width: clamp(1.5rem, 3vw, 1.8rem);
-        height: clamp(1rem, 2vw, 1.2rem);
-        border-radius: 0.6rem;
-        margin: 0.3rem auto;
-        cursor: pointer;
-        transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
-        box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
-        touch-action: none;
-    }
-    .abacus.theme-classic .bead {
-        background: linear-gradient(135deg, #ffca28, #ffa000);
-        border: 0.1rem solid #e65100;
-    }
-    .abacus.theme-modern .bead {
-        background: linear-gradient(135deg, #3498db, #2980b9);
-        border: 0.1rem solid #1f618d;
-    }
-    .abacus.theme-bright .bead {
-        background: linear-gradient(135deg, #2ecc71, #27ae60);
-        border: 0.1rem solid #1b5e20;
-    }
-    .abacus.theme-cyberpunk .bead {
-        background: linear-gradient(135deg, #ff00cc, #00ffcc);
-        border: 0.1rem solid #ff00ff;
-    }
-    .abacus.theme-forest .bead {
-        background: linear-gradient(135deg, #8fbc8f, #556b2f);
-        border: 0.1rem solid #2e8b57;
-    }
-    .abacus.theme-rainbow .bead {
-        background: linear-gradient(135deg, #ffffff, #e0e0e0); /* 淺白色漸層 */
-        border: 0.1rem solid #333333; /* 深灰邊框 */
-    }
-    .abacus.theme-pinkbubble .bead {
-        background: linear-gradient(135deg, #ffccff, #ff99ff);
-        border: 0.1rem solid #ff66cc;
-    }
-    .bead:hover {
-        box-shadow: 0 0.3rem 0.6rem rgba(0, 0, 0, 0.3), 0 0 0.3rem rgba(255, 165, 0, 0.5);
-    }
-    .bead.active {
-        box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.3), 0 0 0.5rem rgba(255, 87, 34, 0.6);
-    }
-    .abacus.theme-classic .bead.active {
-        background: linear-gradient(135deg, #ff5722, #d81b60);
-        border-color: #b71c1c;
-    }
-    .abacus.theme-modern .bead.active {
-        background: linear-gradient(135deg, #9b59b6, #8e44ad);
-        border-color: #6c3483;
-    }
-    .abacus.theme-bright .bead.active {
-        background: linear-gradient(135deg, #e74c3c, #c0392b);
-        border-color: #962626;
-    }
-    .abacus.theme-cyberpunk .bead.active {
-        background: linear-gradient(135deg, #ff9900, #ff00ff);
-        border-color: #ff6600;
-    }
-    .abacus.theme-forest .bead.active {
-        background: linear-gradient(135deg, #cd853f, #8b4513);
-        border-color: #6b3a0d;
-    }
-    .abacus.theme-rainbow .bead.active {
-        background: #ff0000; /* 純紅色，突出顯示 */
-        border-color: #cc0000;
-    }
-    .abacus.theme-pinkbubble .bead.active {
-        background: linear-gradient(135deg, #ff69b4, #ff1493);
-        border-color: #cc1073;
-    }
-    .bead.top.active {
-        transform: translateY(0.8rem);
-    }
-    .bead.bottom.active {
-        transform: translateY(-0.8rem);
-    }
-    .beam {
-        width: 100%;
-        height: 0.8rem;
-        margin: 0.5rem 0;
-        border-radius: 0.2rem;
-        box-shadow: inset 0 0.05rem 0.1rem rgba(0, 0, 0, 0.3);
-    }
-    .abacus.theme-classic .beam {
-        background: #3e2723;
-    }
-    .abacus.theme-modern .beam {
-        background: #17202a;
-    }
-    .abacus.theme-bright .beam {
-        background: #d35400;
-    }
-    .abacus.theme-cyberpunk .beam {
-        background: #00ffcc;
-    }
-    .abacus.theme-forest .beam {
-        background: #556b2f;
-    }
-    .abacus.theme-rainbow .beam {
-        background: #ffffff; /* 白色橫樑 */
-        opacity: 0.9; /* 微透明 */
-        box-shadow: 0 0 0.5rem rgba(255, 255, 255, 0.5); /* 光暈效果 */
-    }
-    .abacus.theme-pinkbubble .beam {
-        background: #ff66cc;
-    }
-    .value {
-        color: #eceff1;
-        font-weight: bold;
-        font-size: clamp(0.8rem, 2vw, 1rem);
-        margin-top: 0.5rem;
-        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-    }
-    .practice-panel {
-        margin-top: 1rem;
-        text-align: center;
-        display: none;
-        width: 100%;
-        max-width: 60rem;
-    }
-    .difficulty-buttons {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-        margin: 0.5rem 0;
-    }
-    .difficulty-levels {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 0.5rem;
-    }
-    .action-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-    }
-    .prompt-area {
-        margin-bottom: 1rem;
-        padding: 1rem;
-        background: #fff;
-        border-radius: 1rem;
-        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
-        width: 100%;
-        max-width: 60rem;
-        text-align: center;
-        display: none;
-        animation: slideUp 0.5s ease-out;
-    }
-    #practice-question {
-        font-size: clamp(1rem, 3vw, 1.4rem);
-        color: #263238;
-        font-weight: 500;
-        margin-bottom: 1rem;
-    }
-    #feedback {
-        font-size: clamp(0.9rem, 2.5vw, 1.3rem);
-        padding: 0.8rem;
-        border-radius: 0.8rem;
-        transition: all 0.3s ease;
-    }
-    #feedback:empty {
-        display: none;
-    }
-    button {
-        padding: 0.6rem 1rem;
-        margin: 0.3rem;
-        font-size: clamp(0.8rem, 2vw, 1rem);
-        cursor: pointer;
-        border: none;
-        border-radius: 1.5rem;
-        background: linear-gradient(135deg, #42a5f5, #1e88e5);
-        color: #fff;
-        transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-        box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.15);
-    }
-    button:hover {
-        background: linear-gradient(135deg, #1e88e5, #1565c0);
-        transform: translateY(-0.2rem);
-        box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.2);
-    }
-    .control-panel button.active {
-        background: linear-gradient(135deg, #1976d2, #0d47a1);
-        transform: translateY(-0.2rem);
-        box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.25);
-    }
-    #reset-button {
-        position: absolute;
-        top: -2.5rem;
-        left: 1rem; /* 歸零按鈕移到左邊 */
-        background: linear-gradient(135deg, #4caf50, #388e3c);
-        font-size: clamp(0.9rem, 2vw, 1.1rem);
-        padding: 0.5rem 0.8rem;
-        border-radius: 1.2rem;
-        display: flex;
-        align-items: center;
-        border: 2px solid #fff;
-    }
-    #reset-button:hover {
-        background: linear-gradient(135deg, #388e3c, #2e7d32);
-        transform: scale(1.1);
-        box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.3);
-        border: 2px solid #fff;
-    }
-    .difficulty-levels button {
-        width: clamp(2rem, 5vw, 2.5rem);
-        height: clamp(2rem, 5vw, 2.5rem);
-        padding: 0;
-        border-radius: 50%;
-        font-size: clamp(0.8rem, 2vw, 1rem);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .difficulty-levels button.active {
-        transform: scale(1.2);
-        box-shadow: 0 0 0.6rem rgba(255, 255, 255, 0.8), 0 0 1rem rgba(255, 105, 180, 0.6), 0 0 1.5rem rgba(255, 69, 0, 0.4);
-    }
-    .difficulty-levels button:nth-child(1) { background: linear-gradient(135deg, #b3e5fc, #81d4fa); }
-    .difficulty-levels button:nth-child(1):hover, .difficulty-levels button:nth-child(1).active:hover { background: linear-gradient(135deg, #81d4fa, #4fc3f7); }
-    .difficulty-levels button:nth-child(2) { background: linear-gradient(135deg, #b2ebf2, #80deea); }
-    .difficulty-levels button:nth-child(2):hover, .difficulty-levels button:nth-child(2).active:hover { background: linear-gradient(135deg, #80deea, #4dd0e1); }
-    .difficulty-levels button:nth-child(3) { background: linear-gradient(135deg, #b9f6ca, #76ff03); }
-    .difficulty-levels button:nth-child(3):hover, .difficulty-levels button:nth-child(3).active:hover { background: linear-gradient(135deg, #76ff03, #64dd17); }
-    .difficulty-levels button:nth-child(4) { background: linear-gradient(135deg, #ccff90, #aeea00); }
-    .difficulty-levels button:nth-child(4):hover, .difficulty-levels button:nth-child(4).active:hover { background: linear-gradient(135deg, #aeea00, #c6ff00); }
-    .difficulty-levels button:nth-child(5) { background: linear-gradient(135deg, #fff59d, #fdd835); }
-    .difficulty-levels button:nth-child(5):hover, .difficulty-levels button:nth-child(5).active:hover { background: linear-gradient(135deg, #fdd835, #fbc02d); }
-    .difficulty-levels button:nth-child(6) { background: linear-gradient(135deg, #ffe082, #ffb300); }
-    .difficulty-levels button:nth-child(6):hover, .difficulty-levels button:nth-child(6).active:hover { background: linear-gradient(135deg, #ffb300, #ffa000); }
-    .difficulty-levels button:nth-child(7) { background: linear-gradient(135deg, #ffcc80, #ff9100); }
-    .difficulty-levels button:nth-child(7):hover, .difficulty-levels button:nth-child(7).active:hover { background: linear-gradient(135deg, #ff9100, #ff6d00); }
-    .difficulty-levels button:nth-child(8) { background: linear-gradient(135deg, #ffab91, #ff5722); }
-    .difficulty-levels button:nth-child(8):hover, .difficulty-levels button:nth-child(8).active:hover { background: linear-gradient(135deg, #ff5722, #f4511e); }
-    .difficulty-levels button:nth-child(9) { background: linear-gradient(135deg, #ef9a9a, #f44336); }
-    .difficulty-levels button:nth-child(9):hover, .difficulty-levels button:nth-child(9).active:hover { background: linear-gradient(135deg, #f44336, #e53935); }
-    .difficulty-levels button:nth-child(10) { background: linear-gradient(135deg, #f06292, #d81b60); }
-    .difficulty-levels button:nth-child(10):hover, .difficulty-levels button:nth-child(10).active:hover { background: linear-gradient(135deg, #d81b60, #c2185b); }
-    .action-buttons button {
-        padding: 0.6rem 1rem;
-        font-size: clamp(0.8rem, 2vw, 1rem);
-        border-radius: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-    }
-    .action-buttons button:nth-child(1) { background: linear-gradient(135deg, #42a5f5, #1e88e5); }
-    .action-buttons button:nth-child(1):hover { background: linear-gradient(135deg, #1e88e5, #1565c0); }
-    .action-buttons button:nth-child(2) { background: linear-gradient(135deg, #42a5f5, #1e88e5); }
-    .action-buttons button:nth-child(2):hover { background: linear-gradient(135deg, #1e88e5, #1565c0); }
-    .theme-selector {
-        margin: 1rem 0;
-        display: flex;
-        justify-content: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-    }
-    .theme-selector button {
-        padding: 0.5rem 0.8rem;
-        font-size: clamp(0.7rem, 1.8vw, 0.9rem);
-        border-radius: 1.2rem;
-        border: none;
-        color: #fff;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-    .theme-selector button.theme-classic {
-        background: linear-gradient(135deg, #8d5524, #6d4c41);
-    }
-    .theme-selector button.theme-classic:hover {
-        background: linear-gradient(135deg, #6d4c41, #4e342e);
-        transform: scale(1.05);
-    }
-    .theme-selector button.theme-modern {
-        background: linear-gradient(135deg, #34495e, #2c3e50);
-    }
-    .theme-selector button.theme-modern:hover {
-        background: linear-gradient(135deg, #2c3e50, #1a252f);
-        transform: scale(1.05);
-    }
-    .theme-selector button.theme-bright {
-        background: linear-gradient(135deg, #f39c12, #e67e22);
-    }
-    .theme-selector button.theme-bright:hover {
-        background: linear-gradient(135deg, #e67e22, #d35400);
-        transform: scale(1.05);
-    }
-    .theme-selector button.theme-cyberpunk {
-        background: linear-gradient(135deg, #ff00cc, #00ffcc);
-    }
-    .theme-selector button.theme-cyberpunk:hover {
-        background: linear-gradient(135deg, #ff00ff, #00ccff);
-        transform: scale(1.05);
-    }
-    .theme-selector button.theme-forest {
-        background: linear-gradient(135deg, #8fbc8f, #556b2f);
-    }
-    .theme-selector button.theme-forest:hover {
-        background: linear-gradient(135deg, #556b2f, #2e8b57);
-        transform: scale(1.05);
-    }
-    .theme-selector button.theme-rainbow {
-        background: linear-gradient(135deg, #ff0000, #ff8000, #ffff00, #00ff00, #00ffff, #0000ff, #8000ff);
-    }
-    .theme-selector button.theme-rainbow:hover {
-        background: linear-gradient(135deg, #ff8000, #ffff00, #00ff00, #00ffff, #0000ff, #8000ff, #ff0000);
-        transform: scale(1.05);
-    }
-    .theme-selector button.theme-pinkbubble {
-        background: linear-gradient(135deg, #ff99cc, #ff66b2);
-    }
-    .theme-selector button.theme-pinkbubble:hover {
-        background: linear-gradient(135deg, #ff66b2, #ff3399);
-        transform: scale(1.05);
-    }
-    .footer {
-        margin-top: 2rem;
-        color: #95a5a6;
-        font-size: clamp(0.7rem, 1.5vw, 0.9rem);
-        text-align: center;
-        letter-spacing: 0.5px;
-    }
-    .floating-ball {
-        position: fixed;
-        bottom: 1rem;
-        right: 1rem;
-        width: 3rem;
-        height: 3rem;
-        background: linear-gradient(135deg, #ffca28, #ffa000);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: move;
-        box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.3);
-        z-index: 1000;
-        transition: transform 0.3s ease;
-    }
-    .floating-ball:hover {
-        transform: scale(1.1);
-    }
-    .floating-ball i {
-        font-size: 1.5rem;
-        color: #fff;
-    }
-    .modal {
-        display: none;
-        position: fixed;
-        width: 20rem;
-        max-width: 90%;
-        background: #fff;
-        border-radius: 1rem;
-        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3);
-        z-index: 2000;
-        cursor: move;
-        padding: 1rem;
-    }
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid #ddd;
-    }
-    .modal-header h2 {
-        margin: 0;
-        font-size: 1.2rem;
-        color: #34495e;
-    }
-    .modal-header .close-btn {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-        color: #666;
-    }
-    .modal-content {
-        max-height: 20rem;
-        overflow-y: auto;
-        padding: 1rem 0;
-        font-size: 1rem;
-        color: #263238;
-    }
-    .modal-content h3 {
-        margin: 0.5rem 0;
-        color: #34495e;
-    }
-    .modal-content p {
-        margin: 0.3rem 0;
-    }
-    .resize-handle {
-        position: absolute;
-        bottom: 0.5rem;
-        right: 0.5rem;
-        width: 1rem;
-        height: 1rem;
-        background: #ccc;
-        border-radius: 50%;
-        cursor: se-resize;
-    }
-    @media (max-width: 768px) {
-        body { padding: 1rem; }
-        .abacus { padding: 1rem; }
-        .column { width: clamp(1.5rem, 3.5vw, 2rem); margin: 0 0.2rem; }
-        .bead { width: clamp(1.2rem, 2.8vw, 1.5rem); height: clamp(0.8rem, 1.8vw, 1rem); }
-        .beam { height: 0.6rem; }
-        button { padding: 0.5rem 0.8rem; }
-        .difficulty-levels { gap: 0.3rem; }
-        .action-buttons { gap: 0.5rem; }
-        .floating-ball { width: 2.5rem; height: 2.5rem; }
-        .floating-ball i { font-size: 1.2rem; }
-    }
-    @media (max-width: 480px) {
-        h1 { font-size: clamp(1.5rem, 4vw, 2rem); }
-        .control-panel { flex-direction: column; align-items: center; }
-        .abacus { padding: 0.8rem; }
-        .column { width: clamp(1.2rem, 3vw, 1.5rem); }
-        .bead { width: clamp(1rem, 2.5vw, 1.2rem); height: clamp(0.6rem, 1.5vw, 0.8rem); }
-        .difficulty-levels button { width: clamp(1.8rem, 4vw, 2rem); height: clamp(1.8rem, 4vw, 2rem); }
-        #reset-button { top: -2rem; left: 0.5rem; }
-        .action-buttons { flex-direction: column; gap: 0.3rem; }
-        .modal { width: 18rem; }
-    }
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    @keyframes slideUp {
-        from { transform: translateY(1rem); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-</style>
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e6ecf0, #c9d6df);
+            margin: 0;
+            padding: 2rem;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+        h1 {
+            color: #34495e;
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: 1px;
+            animation: fadeIn 1s ease-in;
+        }
+        .control-panel {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .abacus {
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            border: 0.5rem solid;
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.25), inset 0 0.1rem 0.3rem rgba(255, 255, 255, 0.2);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            max-width: 60rem;
+            min-width: 20rem;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        .abacus.theme-classic {
+            background: linear-gradient(to bottom, #6d4c41, #4e342e);
+            border-color: #3e2723;
+        }
+        .abacus.theme-modern {
+            background: linear-gradient(to bottom, #2c3e50, #1a252f);
+            border-color: #17202a;
+        }
+        .abacus.theme-bright {
+            background: linear-gradient(to bottom, #f1c40f, #e67e22);
+            border-color: #d35400;
+        }
+        .abacus.theme-cyberpunk {
+            background: linear-gradient(to bottom, #0f1419, #1c2526);
+            border-color: #00ffcc;
+            box-shadow: 0 0 1rem rgba(0, 255, 204, 0.5);
+        }
+        .abacus.theme-forest {
+            background: linear-gradient(to bottom, #2f4f4f, #1e2f23);
+            border-color: #556b2f;
+        }
+        .abacus.theme-rainbow {
+            background: linear-gradient(135deg, #ff0000, #ff8000, #ffff00, #00ff00, #00ffff, #0000ff, #8000ff);
+            border-color: #ffffff;
+            box-shadow: 0 0 1rem rgba(255, 255, 255, 0.3);
+        }
+        .abacus.theme-pinkbubble {
+            background: linear-gradient(to bottom, #ff99cc, #ff66b2);
+            border-color: #ff3399;
+            box-shadow: 0 0 1rem rgba(255, 102, 204, 0.5);
+        }
+        .column {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            width: clamp(2rem, 4vw, 2.5rem);
+            margin: 0 0.3rem;
+        }
+        .bead {
+            width: clamp(1.5rem, 3vw, 1.8rem);
+            height: clamp(1rem, 2vw, 1.2rem);
+            border-radius: 0.6rem;
+            margin: 0.3rem auto;
+            cursor: pointer;
+            transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
+            touch-action: none;
+        }
+        .abacus.theme-classic .bead {
+            background: linear-gradient(135deg, #ffca28, #ffa000);
+            border: 0.1rem solid #e65100;
+        }
+        .abacus.theme-modern .bead {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border: 0.1rem solid #1f618d;
+        }
+        .abacus.theme-bright .bead {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border: 0.1rem solid #1b5e20;
+        }
+        .abacus.theme-cyberpunk .bead {
+            background: linear-gradient(135deg, #ff00cc, #00ffcc);
+            border: 0.1rem solid #ff00ff;
+        }
+        .abacus.theme-forest .bead {
+            background: linear-gradient(135deg, #8fbc8f, #556b2f);
+            border: 0.1rem solid #2e8b57;
+        }
+        .abacus.theme-rainbow .bead {
+            background: linear-gradient(135deg, #ffffff, #e0e0e0);
+            border: 0.1rem solid #333333;
+        }
+        .abacus.theme-pinkbubble .bead {
+            background: linear-gradient(135deg, #ffccff, #ff99ff);
+            border: 0.1rem solid #ff66cc;
+        }
+        .bead:hover {
+            box-shadow: 0 0.3rem 0.6rem rgba(0, 0, 0, 0.3), 0 0 0.3rem rgba(255, 165, 0, 0.5);
+        }
+        .bead.active {
+            box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.3), 0 0 0.5rem rgba(255, 87, 34, 0.6);
+        }
+        .abacus.theme-classic .bead.active {
+            background: linear-gradient(135deg, #ff5722, #d81b60);
+            border-color: #b71c1c;
+        }
+        .abacus.theme-modern .bead.active {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            border-color: #6c3483;
+        }
+        .abacus.theme-bright .bead.active {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-color: #962626;
+        }
+        .abacus.theme-cyberpunk .bead.active {
+            background: linear-gradient(135deg, #ff9900, #ff00ff);
+            border-color: #ff6600;
+        }
+        .abacus.theme-forest .bead.active {
+            background: linear-gradient(135deg, #cd853f, #8b4513);
+            border-color: #6b3a0d;
+        }
+        .abacus.theme-rainbow .bead.active {
+            background: #ff0000;
+            border-color: #cc0000;
+        }
+        .abacus.theme-pinkbubble .bead.active {
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            border-color: #cc1073;
+        }
+        .bead.top.active {
+            transform: translateY(0.8rem);
+        }
+        .bead.bottom.active {
+            transform: translateY(-0.8rem);
+        }
+        .beam {
+            width: 100%;
+            height: 0.8rem;
+            margin: 0.5rem 0;
+            border-radius: 0.2rem;
+            box-shadow: inset 0 0.05rem 0.1rem rgba(0, 0, 0, 0.3);
+        }
+        .abacus.theme-classic .beam {
+            background: #3e2723;
+        }
+        .abacus.theme-modern .beam {
+            background: #17202a;
+        }
+        .abacus.theme-bright .beam {
+            background: #d35400;
+        }
+        .abacus.theme-cyberpunk .beam {
+            background: #00ffcc;
+        }
+        .abacus.theme-forest .beam {
+            background: #556b2f;
+        }
+        .abacus.theme-rainbow .beam {
+            background: #ffffff;
+            opacity: 0.9;
+            box-shadow: 0 0 0.5rem rgba(255, 255, 255, 0.5);
+        }
+        .abacus.theme-pinkbubble .beam {
+            background: #ff66cc;
+        }
+        .value {
+            color: #eceff1;
+            font-weight: bold;
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            margin-top: 0.5rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+        .practice-panel {
+            margin-top: 1rem;
+            text-align: center;
+            display: none;
+            width: 100%;
+            max-width: 60rem;
+        }
+        .difficulty-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+        .difficulty-levels {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .prompt-area {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 60rem;
+            text-align: center;
+            display: none;
+            animation: slideUp 0.5s ease-out;
+        }
+        #practice-question {
+            font-size: clamp(1rem, 3vw, 1.4rem);
+            color: #263238;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        #feedback {
+            font-size: clamp(0.9rem, 2.5vw, 1.3rem);
+            padding: 0.8rem;
+            border-radius: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        #feedback:empty {
+            display: none;
+        }
+        button {
+            padding: 0.6rem 1rem;
+            margin: 0.3rem;
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            cursor: pointer;
+            border: none;
+            border-radius: 1.5rem;
+            background: linear-gradient(135deg, #42a5f5, #1e88e5);
+            color: #fff;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.15);
+        }
+        button:hover {
+            background: linear-gradient(135deg, #1e88e5, #1565c0);
+            transform: translateY(-0.2rem);
+            box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.2);
+        }
+        .control-panel button.active {
+            background: linear-gradient(135deg, #1976d2, #0d47a1);
+            transform: translateY(-0.2rem);
+            box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.25);
+        }
+        #reset-button {
+            position: absolute;
+            top: -2.5rem;
+            left: 1rem;
+            background: linear-gradient(135deg, #4caf50, #388e3c);
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            padding: 0.5rem 0.8rem;
+            border-radius: 1.2rem;
+            display: flex;
+            align-items: center;
+            border: 2px solid #fff;
+        }
+        #reset-button:hover {
+            background: linear-gradient(135deg, #388e3c, #2e7d32);
+            transform: scale(1.1);
+            box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.3);
+            border: 2px solid #fff;
+        }
+        .difficulty-levels button {
+            width: clamp(2rem, 5vw, 2.5rem);
+            height: clamp(2rem, 5vw, 2.5rem);
+            padding: 0;
+            border-radius: 50%;
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .difficulty-levels button.active {
+            transform: scale(1.2);
+            box-shadow: 0 0 0.6rem rgba(255, 255, 255, 0.8), 0 0 1rem rgba(255, 105, 180, 0.6), 0 0 1.5rem rgba(255, 69, 0, 0.4);
+        }
+        .difficulty-levels button:nth-child(1) { background: linear-gradient(135deg, #b3e5fc, #81d4fa); }
+        .difficulty-levels button:nth-child(1):hover, .difficulty-levels button:nth-child(1).active:hover { background: linear-gradient(135deg, #81d4fa, #4fc3f7); }
+        .difficulty-levels button:nth-child(2) { background: linear-gradient(135deg, #b2ebf2, #80deea); }
+        .difficulty-levels button:nth-child(2):hover, .difficulty-levels button:nth-child(2).active:hover { background: linear-gradient(135deg, #80deea, #4dd0e1); }
+        .difficulty-levels button:nth-child(3) { background: linear-gradient(135deg, #b9f6ca, #76ff03); }
+        .difficulty-levels button:nth-child(3):hover, .difficulty-levels button:nth-child(3).active:hover { background: linear-gradient(135deg, #76ff03, #64dd17); }
+        .difficulty-levels button:nth-child(4) { background: linear-gradient(135deg, #ccff90, #aeea00); }
+        .difficulty-levels button:nth-child(4):hover, .difficulty-levels button:nth-child(4).active:hover { background: linear-gradient(135deg, #aeea00, #c6ff00); }
+        .difficulty-levels button:nth-child(5) { background: linear-gradient(135deg, #fff59d, #fdd835); }
+        .difficulty-levels button:nth-child(5):hover, .difficulty-levels button:nth-child(5).active:hover { background: linear-gradient(135deg, #fdd835, #fbc02d); }
+        .difficulty-levels button:nth-child(6) { background: linear-gradient(135deg, #ffe082, #ffb300); }
+        .difficulty-levels button:nth-child(6):hover, .difficulty-levels button:nth-child(6).active:hover { background: linear-gradient(135deg, #ffb300, #ffa000); }
+        .difficulty-levels button:nth-child(7) { background: linear-gradient(135deg, #ffcc80, #ff9100); }
+        .difficulty-levels button:nth-child(7):hover, .difficulty-levels button:nth-child(7).active:hover { background: linear-gradient(135deg, #ff9100, #ff6d00); }
+        .difficulty-levels button:nth-child(8) { background: linear-gradient(135deg, #ffab91, #ff5722); }
+        .difficulty-levels button:nth-child(8):hover, .difficulty-levels button:nth-child(8).active:hover { background: linear-gradient(135deg, #ff5722, #f4511e); }
+        .difficulty-levels button:nth-child(9) { background: linear-gradient(135deg, #ef9a9a, #f44336); }
+        .difficulty-levels button:nth-child(9):hover, .difficulty-levels button:nth-child(9).active:hover { background: linear-gradient(135deg, #f44336, #e53935); }
+        .difficulty-levels button:nth-child(10) { background: linear-gradient(135deg, #f06292, #d81b60); }
+        .difficulty-levels button:nth-child(10):hover, .difficulty-levels button:nth-child(10).active:hover { background: linear-gradient(135deg, #d81b60, #c2185b); }
+        .action-buttons button {
+            padding: 0.6rem 1rem;
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            border-radius: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .action-buttons button:nth-child(1) { background: linear-gradient(135deg, #42a5f5, #1e88e5); }
+        .action-buttons button:nth-child(1):hover { background: linear-gradient(135deg, #1e88e5, #1565c0); }
+        .action-buttons button:nth-child(2) { background: linear-gradient(135deg, #42a5f5, #1e88e5); }
+        .action-buttons button:nth-child(2):hover { background: linear-gradient(135deg, #1e88e5, #1565c0); }
+        .theme-selector {
+            margin: 1rem 0;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .theme-selector button {
+            padding: 0.5rem 0.8rem;
+            font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+            border-radius: 1.2rem;
+            border: none;
+            color: #fff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .theme-selector button.theme-classic {
+            background: linear-gradient(135deg, #8d5524, #6d4c41);
+        }
+        .theme-selector button.theme-classic:hover {
+            background: linear-gradient(135deg, #6d4c41, #4e342e);
+            transform: scale(1.05);
+        }
+        .theme-selector button.theme-modern {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+        }
+        .theme-selector button.theme-modern:hover {
+            background: linear-gradient(135deg, #2c3e50, #1a252f);
+            transform: scale(1.05);
+        }
+        .theme-selector button.theme-bright {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+        .theme-selector button.theme-bright:hover {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            transform: scale(1.05);
+        }
+        .theme-selector button.theme-cyberpunk {
+            background: linear-gradient(135deg, #ff00cc, #00ffcc);
+        }
+        .theme-selector button.theme-cyberpunk:hover {
+            background: linear-gradient(135deg, #ff00ff, #00ccff);
+            transform: scale(1.05);
+        }
+        .theme-selector button.theme-forest {
+            background: linear-gradient(135deg, #8fbc8f, #556b2f);
+        }
+        .theme-selector button.theme-forest:hover {
+            background: linear-gradient(135deg, #556b2f, #2e8b57);
+            transform: scale(1.05);
+        }
+        .theme-selector button.theme-rainbow {
+            background: linear-gradient(135deg, #ff0000, #ff8000, #ffff00, #00ff00, #00ffff, #0000ff, #8000ff);
+        }
+        .theme-selector button.theme-rainbow:hover {
+            background: linear-gradient(135deg, #ff8000, #ffff00, #00ff00, #00ffff, #0000ff, #8000ff, #ff0000);
+            transform: scale(1.05);
+        }
+        .theme-selector button.theme-pinkbubble {
+            background: linear-gradient(135deg, #ff99cc, #ff66b2);
+        }
+        .theme-selector button.theme-pinkbubble:hover {
+            background: linear-gradient(135deg, #ff66b2, #ff3399);
+            transform: scale(1.05);
+        }
+        .footer {
+            margin-top: 2rem;
+            color: #95a5a6;
+            font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+        .floating-ball {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            width: 3rem;
+            height: 3rem;
+            background: linear-gradient(135deg, #ffca28, #ffa000);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: move;
+            box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        .floating-ball:hover {
+            transform: scale(1.1);
+        }
+        .floating-ball i {
+            font-size: 1.5rem;
+            color: #fff;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            width: 20rem;
+            max-width: 90%;
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            cursor: move;
+            padding: 1rem;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #ddd;
+        }
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #34495e;
+        }
+        .modal-header .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            padding: 0.5rem;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            max-height: 20rem;
+            overflow-y: auto;
+            padding: 1rem 0;
+            font-size: 1rem;
+            color: #263238;
+        }
+        .modal-content h3 {
+            margin: 0.5rem 0;
+            color: #34495e;
+        }
+        .modal-content p {
+            margin: 0.3rem 0;
+        }
+        .resize-handle {
+            position: absolute;
+            bottom: 0.5rem;
+            right: 0.5rem;
+            width: 1rem;
+            height: 1rem;
+            background: #ccc;
+            border-radius: 50%;
+            cursor: se-resize;
+        }
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .abacus { padding: 1rem; }
+            .column { width: clamp(1.5rem, 3.5vw, 2rem); margin: 0 0.2rem; }
+            .bead { width: clamp(1.2rem, 2.8vw, 1.5rem); height: clamp(0.8rem, 1.8vw, 1rem); }
+            .beam { height: 0.6rem; }
+            button { padding: 0.5rem 0.8rem; }
+            .difficulty-levels { gap: 0.3rem; }
+            .action-buttons { gap: 0.5rem; }
+            .floating-ball { width: 2.5rem; height: 2.5rem; }
+            .floating-ball i { font-size: 1.2rem; }
+        }
+        @media (max-width: 480px) {
+            h1 { font-size: clamp(1.5rem, 4vw, 2rem); }
+            .control-panel { flex-direction: column; align-items: center; }
+            .abacus { padding: 0.8rem; }
+            .column { width: clamp(1.2rem, 3vw, 1.5rem); }
+            .bead { width: clamp(1rem, 2.5vw, 1.2rem); height: clamp(0.6rem, 1.5vw, 0.8rem); }
+            .difficulty-levels button { width: clamp(1.8rem, 4vw, 2rem); height: clamp(1.8rem, 4vw, 2rem); }
+            #reset-button { top: -2rem; left: 0.5rem; }
+            .action-buttons { flex-direction: column; gap: 0.3rem; }
+            .modal { width: 18rem; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(1rem); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
 </head>
 <body>
     <h1>超級神珠心算盤練習系統</h1>
@@ -672,7 +678,7 @@
                     abacusDiv.appendChild(columnDiv);
                 }
                 abacusDiv.className = `abacus ${currentTheme}`;
-                this.syncBeads(); // 初始渲染後同步珠子狀態
+                this.syncBeads();
             }
 
             addTouchEvents() {
@@ -725,15 +731,13 @@
             toggleBottomBead(column, beadIndex) {
                 const columnDiv = document.querySelectorAll('.column')[column];
                 const bottomBeads = columnDiv.querySelectorAll('.bead.bottom');
-                const currentValue = this.values[column] % 5; // 當前底部珠子的值 (0-4)
-                const targetValue = beadIndex + 1; // 目標值 (1-4)
+                const currentValue = this.values[column] % 5;
+                const targetValue = beadIndex + 1;
 
                 if (currentValue === targetValue) {
-                    // 如果點擊當前值，則全部取消活躍
                     bottomBeads.forEach(bead => bead.classList.remove('active'));
                     this.values[column] -= currentValue;
                 } else {
-                    // 根據目標值設置活躍珠子
                     bottomBeads.forEach((bead, index) => {
                         if (index < targetValue) bead.classList.add('active');
                         else bead.classList.remove('active');
@@ -750,24 +754,20 @@
             }
 
             syncBeads() {
-                // 同步所有珠子狀態與數值
                 document.querySelectorAll('.column').forEach((columnDiv, column) => {
                     const topBead = columnDiv.querySelector('.bead.top');
                     const bottomBeads = columnDiv.querySelectorAll('.bead.bottom');
                     const value = this.values[column];
 
-                    // 同步上珠 (5)
                     if (value >= 5) topBead.classList.add('active');
                     else topBead.classList.remove('active');
 
-                    // 同步下珠 (1-4)
                     const bottomValue = value % 5;
                     bottomBeads.forEach((bead, index) => {
                         if (index < bottomValue) bead.classList.add('active');
                         else bead.classList.remove('active');
                     });
 
-                    // 更新顯示數值
                     columnDiv.querySelector('.value').textContent = value;
                 });
             }
@@ -876,10 +876,12 @@
         let isDraggingModal = false;
         let isResizing = false;
         let ballOffsetX, ballOffsetY, modalOffsetX, modalOffsetY;
+        let startX, startY, hasMoved;
 
         floatingBall.addEventListener('mousedown', startDraggingBall);
         floatingBall.addEventListener('touchstart', startDraggingBall);
-        floatingBall.addEventListener('click', openModal);
+        floatingBall.addEventListener('click', handleClick); // 恢復滑鼠點擊
+        floatingBall.addEventListener('touchend', handleTouchEnd);
 
         document.addEventListener('mousemove', dragElement);
         document.addEventListener('touchmove', dragElement);
@@ -890,14 +892,18 @@
         modal.querySelector('.modal-header').addEventListener('touchstart', startDraggingModal);
         modal.querySelector('#resize-handle').addEventListener('mousedown', startResizing);
         modal.querySelector('#resize-handle').addEventListener('touchstart', startResizing);
+        modal.querySelector('.close-btn').addEventListener('touchstart', closeModal);
 
         function startDraggingBall(e) {
             e.preventDefault();
             isDraggingBall = true;
+            hasMoved = false; // 重置移動標記
             const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
             const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
             ballOffsetX = clientX - floatingBall.offsetLeft;
             ballOffsetY = clientY - floatingBall.offsetTop;
+            startX = clientX;
+            startY = clientY;
         }
 
         function startDraggingModal(e) {
@@ -920,6 +926,9 @@
             const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
 
             if (isDraggingBall) {
+                const distanceX = Math.abs(clientX - startX);
+                const distanceY = Math.abs(clientY - startY);
+                if (distanceX > 5 || distanceY > 5) hasMoved = true; // 移動超過5px視為拖曳
                 floatingBall.style.left = `${clientX - ballOffsetX}px`;
                 floatingBall.style.top = `${clientY - ballOffsetY}px`;
                 floatingBall.style.bottom = 'auto';
@@ -942,21 +951,37 @@
             isResizing = false;
         }
 
+        function handleClick(e) {
+            if (!hasMoved) openModal(); // 滑鼠點擊時，若未拖曳則開啟
+        }
+
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            if (!isDraggingBall) return;
+
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const distanceX = Math.abs(touchEndX - startX);
+            const distanceY = Math.abs(touchEndY - startY);
+
+            if (distanceX < 10 && distanceY < 10) openModal(); // 觸控點擊檢測
+            isDraggingBall = false;
+        }
+
         function openModal() {
-            if (!isDraggingBall) {
-                modal.style.display = 'block';
-                if (!modal.style.left || !modal.style.top) {
-                    const windowWidth = window.innerWidth;
-                    const windowHeight = window.innerHeight;
-                    const modalWidth = modal.offsetWidth;
-                    const modalHeight = modal.offsetHeight;
-                    modal.style.left = `${(windowWidth - modalWidth) / 2}px`;
-                    modal.style.top = `${(windowHeight - modalHeight) / 2}px`;
-                }
+            modal.style.display = 'block';
+            if (!modal.style.left || !modal.style.top) {
+                const windowWidth = window.innerWidth;
+                const windowHeight = window.innerHeight;
+                const modalWidth = modal.offsetWidth;
+                const modalHeight = modal.offsetHeight;
+                modal.style.left = `${(windowWidth - modalWidth) / 2}px`;
+                modal.style.top = `${(windowHeight - modalHeight) / 2}px`;
             }
         }
 
-        function closeModal() {
+        function closeModal(e) {
+            if (e) e.preventDefault();
             modal.style.display = 'none';
         }
 
